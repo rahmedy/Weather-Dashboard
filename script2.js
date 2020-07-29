@@ -5,12 +5,13 @@ $('document').ready(function() {
 		// addData();
 
 		var history = [];
-		var city = $('#cityData').val();
+        var city = $('#cityData').val();
+        var weatherDiv = $("<div class='weather'>");
 
 		// var cityButton = JSON.parse(localStorage.getItem("cityID"));
 		// var city = localStorage.getItem('last search');
 
-		function addData() {
+		function addData(city) {
 			$.ajax({
 				url:
 					'HTTPS://api.openweathermap.org/data/2.5/weather?q=' +
@@ -26,7 +27,7 @@ $('document').ready(function() {
 					$('.card-header').empty();
 
 					// This div will be for the data being returned
-					var weatherDiv = $("<div class='weather'>");
+					// var weatherDiv = $("<div class='weather'>");
 
 					// This will get the temp data and add to html
 
@@ -45,9 +46,9 @@ $('document').ready(function() {
 					weatherDiv.append(hThree);
 
 					// This will get the UV index
-					var uvIndex = response;
-					var hFour = $('<h6>').text('UV Index: ' + uvIndex);
-					weatherDiv.append(hFour);
+					// var uvIndex = response;
+					// var hFour = $('<h6>').text('UV Index: ' + uvIndex);
+					// weatherDiv.append(hFour);
 
 					var icon = response.weather[0].icon;
 
@@ -66,14 +67,49 @@ $('document').ready(function() {
 						history.push(cityName);
 						$('.list-group').append('<li>' + history);
 					});
-
+                    console.log(response);
+                    uvIndex(response.coord.lat, response.coord.lon);
 					// console.log(response)
 				}
 			);
-		}
+        }
+        
+
+        function uvIndex(lat = 0, lon = 0){
+            const url = "https://api.openweathermap.org/data/2.5/uvi?&lat=" + lat + "&lon=" + lon + "&appid=a66005cdeed278c7401c80000cda18a8";
+            $.ajax({
+                url: url,
+                method: 'GET'
+            }).then(function(response){
+
+                var uvResponse = response.value;
+
+                // var btn = $("<span>").addClass("btn btn-sm").text(uvResponse);
+                var uvIndex = $("<p>").text("UV Index: ");
+                var uvSpan = $("<span>").text(uvResponse);
+                uvSpan.removeClass("red green purple");
+                    if (uvResponse < 5) {
+                        uvSpan.addClass("green");
+
+                    } else if (uvResponse < 10) {
+                        uvSpan.addClass("red"); 
+                    } else {
+                        uvSpan.addClass("purple");
+                    }
+                    uvIndex.append(uvSpan);
+                    weatherDiv.append(uvIndex);
+                    $('#card-body').prepend(weatherDiv);
+
+                    
+
+                console.log(response);
+
+            })
+            // console.log(response);
+        }
 
 		// This will be for the 5 day forecast
-		function fiveDay() {
+		function fiveDay(city) {
 			$.ajax({
 				url:
 					'HTTPS://api.openweathermap.org/data/2.5/forecast?q=' +
@@ -95,7 +131,7 @@ $('document').ready(function() {
 							'src',
 							'https://openweathermap.org/img/w/' + response.list[i].weather[0].icon + '.png'
 						);
-						var colOne = $('<div>').addClass('col-md-4');
+						var colOne = $('<div>').addClass('col-md-3');
 						var cardOne = $('<div>').addClass('card bg-primary text-white');
 						var cardBodyOne = $('<div>').addClass('card-body p-2');
 						var humidOne = $('<p>')
@@ -107,14 +143,15 @@ $('document').ready(function() {
 
 						colOne.append(cardOne.append(cardBodyOne.append(titleOne, iconOne, tempOne, humidOne)));
 						$('#forecast .row').append(colOne);
-						console.log(colOne);
+						// console.log(colOne);
 					}
 				}
 			});
 		}
 
-		addData();
-		fiveDay();
+       addData(city);
+        fiveDay(city);
+       
 
 		function setDate() {
 			var date = moment().format('l');
