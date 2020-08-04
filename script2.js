@@ -4,7 +4,7 @@ $('document').ready(function() {
 		
 
 		var city = $('#cityData').val();
-		var historyList = JSON.parse(localStorage.getItem('history')) || [];
+		var historyList = JSON.parse(localStorage.getItem('history')) || [""];
 		// console.log('historyList1', historyList)
 		historyList.push(city);
 		// console.log('historyList2', historyList)
@@ -40,10 +40,12 @@ $('document').ready(function() {
 					var hOne = $('<h6>').text('Temperature: ' + Math.floor(9 / 5 * temP - 459.67) + '°F');
 					weatherDiv.append(hOne);
 
-					// this will get the humidity
+					// This will get the humidity
 					var humD = response.main.humidity;
 					var hTwo = $('<h6>').text('Humidity: ' + humD + '  %');
 					weatherDiv.append(hTwo);
+
+
 					// This will get the Wind speed
 					var windS = response.wind.speed;
 					var hThree = $('<h6>').text('Wind Speed: ' + windS + '   MPH');
@@ -60,10 +62,11 @@ $('document').ready(function() {
 					$('#card-body').prepend(weatherDiv);
 				
 					uvIndex(response.coord.lat, response.coord.lon);
-					// console.log(response)
+				
 				}
 			);
 		}
+	
 		function uvIndex(lat = 0, lon = 0) {
 			const url =
 				'https://api.openweathermap.org/data/2.5/uvi?&lat=' +
@@ -82,18 +85,18 @@ $('document').ready(function() {
 				var uvSpan = $('<span>').text(uvResponse);
 				// uvSpan.removeClass('red green purple');
 				if (uvResponse < 2) {
-					uvSpan.css('color', 'green');
+					uvSpan.css('background-color', 'green');
 				} else if (uvResponse < 6) {
-					uvSpan.css('color', 'yellow');
+					uvSpan.css('background-color', 'yellow');
 				} else {
-					uvSpan.css('color', 'red');
+					uvSpan.css('background-color', 'red');
 				}
 				uvIndex.append(uvSpan);
 				weatherDiv.append(uvIndex);
 				$('#card-body').prepend(weatherDiv);
-				// console.log(response);
+			
 			});
-			// console.log(response);
+			
 		}
 
 		// This will be for the 5 day forecast
@@ -106,7 +109,7 @@ $('document').ready(function() {
 				method: 'GET'
 			}).then(function(response) {
 				$('#fiveDay').empty();
-				var newRow = $("<div class='row'></div>");
+				var newRow = $("<div class='row'></div>").css("float", "left");
 				$('#fiveDay').append(newRow);
 				for (var i = 0; i < response.list.length; i++) {
 					// console.log(response.list.length);
@@ -117,8 +120,8 @@ $('document').ready(function() {
 							'src',
 							'https://openweathermap.org/img/w/' + response.list[i].weather[0].icon + '.png'
 						);
-						var colOne = $('<div>').addClass('col-md-3');
-						var cardOne = $('<div>').addClass('card bg-primary text-white');
+						var colOne = $('<div>').addClass('col-md-4').css("float", "left");
+						var cardOne = $('<div>').addClass('card bg-primary text-white ');
 						var cardBodyOne = $('<div>').addClass('card-body p-2');
 						var humidOne = $('<p>')
 							.addClass('card-text')
@@ -140,20 +143,23 @@ $('document').ready(function() {
 			var date = moment().format('l');
 			return date;
 		}
-
 		addData(city);
 		fiveDay(city);
-	});
+		
 
-	var historyList = JSON.parse(localStorage.getItem('history'));
-	console.log('historyList', historyList);
+		var historyList = JSON.parse(localStorage.getItem('history'));
+	// console.log('historyList', historyList);
 	if (historyList.length !== 0) {
 		addData(historyList[historyList.length - 1]);
 		fiveDay(historyList[historyList.length - 1]);
 	}
 	for (var i = 0; i < historyList.length; i++) {
-		var listCity = $('<p>').text(historyList[i]);
+		var listCity = $('<li>').text(historyList[i]);
 		$('#list').append(listCity);
 	}
+	});
+
+	
+
 });
 // localStorage.removeItem('history')
