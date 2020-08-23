@@ -1,12 +1,11 @@
-$('document').ready(function () {
-	$('#search').on('click', function (event) {
+$('document').ready(function() {
+	$('#search').on('click', function(event) {
 		event.preventDefault();
 		addData(city);
 		fiveDay(city);
 
-
 		var city = $('#cityData').val();
-		var historyList = JSON.parse(localStorage.getItem('history')) || [""];
+		var historyList = JSON.parse(localStorage.getItem('history')) || [];
 		// console.log('historyList1', historyList)
 		historyList.push(city);
 		// console.log('historyList2', historyList)
@@ -22,13 +21,14 @@ $('document').ready(function () {
 		// var city = localStorage.getItem('last search');
 		function addData(city) {
 			$.ajax({
-				url: 'HTTPS://api.openweathermap.org/data/2.5/weather?q=' +
+				url:
+					'HTTPS://api.openweathermap.org/data/2.5/weather?q=' +
 					city +
 					'&appid=a66005cdeed278c7401c80000cda18a8',
 				method: 'GET'
 			}).then(
 				///////////<<<<--------------1
-				function (response) {
+				function(response) {
 					// console.log("response");
 					$('#card-body').empty();
 					$('.card-header').empty();
@@ -46,14 +46,12 @@ $('document').ready(function () {
 					var hTwo = $('<h6>').text('Humidity: ' + humD + '  %');
 					weatherDiv.append(hTwo);
 
-
 					// This will get the Wind speed
 					var windS = response.wind.speed;
 					var hThree = $('<h6>').text('Wind Speed: ' + windS + '   MPH');
 					weatherDiv.append(hThree);
 
 					// This will get the UV index
-
 
 					var icon = response.weather[0].icon;
 					var iconU = 'http://openweathermap.org/img/w/' + icon + '.png';
@@ -63,7 +61,6 @@ $('document').ready(function () {
 					$('#card-body').prepend(weatherDiv);
 
 					uvIndex(response.coord.lat, response.coord.lon);
-
 				}
 			);
 		}
@@ -78,7 +75,7 @@ $('document').ready(function () {
 			$.ajax({
 				url: url,
 				method: 'GET'
-			}).then(function (response) {
+			}).then(function(response) {
 				var uvResponse = response.value;
 				console.log(response);
 				// var btn = $("<span>").addClass("btn btn-sm").text(uvResponse);
@@ -95,21 +92,20 @@ $('document').ready(function () {
 				uvIndex.append(uvSpan);
 				weatherDiv.append(uvIndex);
 				$('#card-body').prepend(weatherDiv);
-
 			});
-
 		}
 
 		// This will be for the 5 day forecast
 		function fiveDay(city) {
 			$.ajax({
-				url: 'HTTPS://api.openweathermap.org/data/2.5/forecast?q=' +
+				url:
+					'HTTPS://api.openweathermap.org/data/2.5/forecast?q=' +
 					city +
 					'&appid=a66005cdeed278c7401c80000cda18a8',
 				method: 'GET'
-			}).then(function (response) {
+			}).then(function(response) {
 				$('#fiveDay').empty();
-				var newRow = $("<div class='row'></div>").css("float", "left");
+				var newRow = $("<div class='row'></div>").css('float', 'left');
 				$('#fiveDay').append(newRow);
 				for (var i = 0; i < response.list.length; i++) {
 					// console.log(response.list.length);
@@ -120,20 +116,18 @@ $('document').ready(function () {
 							'src',
 							'https://openweathermap.org/img/w/' + response.list[i].weather[0].icon + '.png'
 						);
-						var colOne = $('<div>').addClass('col-md-4').css("float", "left");
+						var colOne = $('<div>').addClass('col-md-4').css('float', 'left');
 						var cardOne = $('<div>').addClass('card bg-primary text-white ');
 						var cardBodyOne = $('<div>').addClass('card-body p-2');
 						var humidOne = $('<p>')
 							.addClass('card-text')
 							.text('Humidity: ' + response.list[i].main.humidity + '%');
 
-
 						var tempOne = $('<p>')
 							.addClass('card-text')
 							.text('Temperature: ' + Math.floor(9 / 5 * response.list[i].main.temp - 459.67) + '°F');
 						colOne.append(cardOne.append(cardBodyOne.append(titleOne, iconOne, tempOne, humidOne)));
 						$('#fiveDay .row').append(colOne);
-
 					}
 				}
 			});
@@ -144,13 +138,13 @@ $('document').ready(function () {
 			return date;
 		}
 
-
 		var historyList = JSON.parse(localStorage.getItem('history'));
 		// console.log('historyList', historyList);
 		if (historyList.length !== 0) {
 			addData(historyList[historyList.length - 1]);
 			fiveDay(historyList[historyList.length - 1]);
 		}
+		console.log(historyList);
 		for (var i = 0; i < historyList.length; i++) {
 			var listCity = $('<li>').text(historyList[i]);
 			$('#list').append(listCity);
@@ -158,5 +152,4 @@ $('document').ready(function () {
 	});
 
 	// localStorage.removeItem('history')
-
 });
