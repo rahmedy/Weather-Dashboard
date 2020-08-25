@@ -3,6 +3,7 @@ $('document').ready(function () {
         event.preventDefault();
         addData(city);
         fiveDay(city);
+        // renderbuttons(city);
 
         var city = $('#cityData').val();
         var historyList = JSON.parse(localStorage.getItem('history')) || [];
@@ -116,6 +117,27 @@ $('document').ready(function () {
             });
         }
 
+
+        function renderbuttons(){
+            $(".listt").empty();
+
+            for(var i = 0; i < historyList.length; i++){
+
+                let b = $("<buttton>");
+                b.addClass("city-btns d-block");
+                b.attr("data-name", historyList[i]);
+                b.text(historyList[i]);
+                $(".listt").append(b);
+
+                b.click(function () {
+                    citySearch = "q=" + $(this).text();
+                    addData(citySearch);  
+                });
+
+
+        }
+    }
+
         function setDate() {
             var date = moment().format('l');
             return date;
@@ -129,8 +151,14 @@ $('document').ready(function () {
         }
         console.log(historyList);
         for (var i = 0; i < historyList.length; i++) {
-            var listCity = $('<li>').text(historyList[i]);
+            var listCity = $("<button>");
+            listCity.addClass("city-btns d-block");
+            listCity.attr("data-name", historyList[i]);
             $('#list').append(listCity);
+
+            listCity.click(function() {
+            console.log(listCity)
+            });
         }
     });
 
